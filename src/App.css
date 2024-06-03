@@ -1,42 +1,87 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+.square-input { 
+  width: 10%;
+  height: 10%;
+  max-width: 45px;
+  max-height: 45px;
+  padding: 0.5em;
+  margin: 0.1em 0.1em;
+  border-radius: 0.25em;
+  font-size: calc(2vw + 2vh);
+  text-align: center;
+  color: white;
+  caret-color: transparent;
+  background-color: transparent;
+  resize: both;
+  overflow: hidden;
+}
+
+.word-row{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  height: fit-content;
+}
+
+input:focus {
+  outline: none;
+  border: 5px solid #565758;
+}
+
+.BoxNone {
+  border: 5px solid #3a3a3c;
+}
+
+.BoxFail {
+  border: 5px solid #740909;
+}
+
+.BoxSuccess {
+  border: 5px solid #097409;
+}
+
+.BoxInWord {
+  border: 5px solid rgb(219, 219, 20);
+}
+
+.game {
+  display: grid;
+  grid-template-rows: repeat(5);
+  margin-top: 5px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 0 20px;
+}
+
+.title {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.navbar h1 {
+  margin: 0;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.navbar p {
+  margin: 0; 
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.refresh {
+  position: absolute;
+  right: 20px;
+  width: fit-content;
+  height: fit-content;
+  border-radius: 5px;
+  background-color: grey;
+  margin-left: 50px;
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: transparent;
 }
