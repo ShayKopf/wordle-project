@@ -25,7 +25,6 @@ const Letterbox =  forwardRef<HTMLInputElement, LetterboxProps>(({ notifyParent 
       });
       }}
       type="text" 
-      style={{width: '50px', height: '50px'}}
       onKeyUp={(e) => notifyParent(e)}
       ref={ref}
     />

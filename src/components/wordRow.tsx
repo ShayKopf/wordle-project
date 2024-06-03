@@ -57,7 +57,7 @@ const WordRow: React.FC<{ rowIndex: number, isDisabled: boolean }> = ({ rowIndex
     };
 
     return (
-        <div className={`"word-row" ${isDisabled ? 'disabled' : ''}`}>
+        <div className={`word-row ${isDisabled ? 'disabled' : ''}`}>
             {gameBoard[rowIndex].map((_, index) => (
                 <Letterbox
                     key={index}
