@@ -1,31 +1,33 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useContext } from 'react';
 import '../App.css';
 import { ResultStatus } from './types/resultStatus';
+import { GameBoardContext } from '../context/GameBoardContext';
 
 interface LetterboxProps {
-  onKeyUp?: React.KeyboardEventHandler<HTMLInputElement>;
+  notifyParent: React.KeyboardEventHandler<HTMLInputElement>;
   status: ResultStatus;
-  initGuess: string;
+  columnIndex: number;
+  rowIndex: number
 }
 
-const Letterbox =  forwardRef<HTMLInputElement, LetterboxProps>(({ onKeyUp = (e) => {}, status = ResultStatus.BoxNone, initGuess = ''}, ref) => {
-  const [value, setValue] = useState({guess: initGuess});
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Override the current text with the latest written letter
-    const newValue = event.currentTarget.value.slice(event.currentTarget.value.length - 1, event.currentTarget.value.length); // Limit input to a single character
-    setValue({guess: newValue});
-  };
+const Letterbox =  forwardRef<HTMLInputElement, LetterboxProps>(({ notifyParent = (e) => {}, columnIndex = 0, rowIndex = 0, status = ResultStatus.BoxNone}, ref) => {
+  const { gameBoard, setGameBoard } = useContext(GameBoardContext);
 
   return (
     <input
       className={ `square-input ${status.toString()}` }
+      value={gameBoard[rowIndex][columnIndex]}
+      onChange={(e) => { 
+        setGameBoard((prevGameBoard) => {
+          const value = e.target.value.slice(-1);
+          prevGameBoard[rowIndex][columnIndex] = value;
+          return [...prevGameBoard];
+      });
+      }}
       type="text" 
-      value={value.guess} 
-      onChange={handleChange} 
       style={{width: '50px', height: '50px'}}
+      onKeyUp={(e) => notifyParent(e)}
       ref={ref}
-      onKeyUp={onKeyUp.bind(this)}
     />
   );
 });

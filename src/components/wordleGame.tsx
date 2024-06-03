@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../App.css';
 import WordRow from './wordRow'
+import { GameBoardContext } from '../context/GameBoardContext';
 
 export const WordleGame = () => {
-  const [value, setValue] = useState({currentIndex: +(localStorage.getItem("currentIndex") ?? 0), word: 'hello'});
+  const [value, setValue] = useState({currentIndex: +(localStorage.getItem("currentIndex") ?? 0)});
+  const { gameBoard, setGameBoard } = useContext(GameBoardContext);
 
   useEffect(() => {
     localStorage.setItem("currentIndex", (value.currentIndex).toString());
@@ -19,7 +21,6 @@ export const WordleGame = () => {
 
         setValue((prevValue) => ({
           currentIndex: prevValue.currentIndex + 1,
-          word: prevValue.word,
         }));
       }
     };
@@ -41,12 +42,8 @@ export const WordleGame = () => {
   }, []);
 
   function resetGame(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-    setValue({currentIndex: 0, word: 'hello'});
-    for(let i=0; i<6; i++) {
-      for(let j=0; j<5; j++) {
-        localStorage.setItem(`${i}_${j}`, '');
-      }
-    }
+    setValue({currentIndex: 0});
+    setGameBoard((prevBoard) => new Array(6).fill(false).map(() => new Array(5).fill('')));
   }
 
   return (
@@ -59,8 +56,8 @@ export const WordleGame = () => {
       <button className='refresh' onClick={resetGame}>Reset</button>
     </div>
     <div className='game'>
-      {Array.from(Array(6), (n, index) => (
-          <WordRow word={value.word} rowIndex={index} isDisabled={index!=value.currentIndex} />
+      {gameBoard.map((n: string[], index) => (
+          <WordRow rowIndex={index} isDisabled={index!=value.currentIndex} />
       ))}
     </div>
     </>

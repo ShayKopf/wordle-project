@@ -1,22 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import Letterbox from './letterbox';
 import { ResultStatus } from './types/resultStatus';
 import '../App.css';
+import { GameBoardContext } from '../context/GameBoardContext';
 
 
-const WordRow: React.FC<{ word: string, rowIndex: number, isDisabled: boolean }> = ({ word, rowIndex = 0, isDisabled=false}) => {
-    const [value, setValue] = useState({word: word});
+const WordRow: React.FC<{ rowIndex: number, isDisabled: boolean }> = ({ rowIndex = 0, isDisabled=false}) => {
     const letterRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-    if (word.length > 5) {
-        throw new Error('Word must be 5 characters or less');
-    }
+    const { wordOfTheDay, gameBoard } = useContext(GameBoardContext);
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
 
     useEffect(() => {
         if (!isDisabled && letterRefs.current[0]) {
           letterRefs.current[0].focus();
         }
-      });
+      }, [isDisabled]);
 
 
     const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -25,52 +23,49 @@ const WordRow: React.FC<{ word: string, rowIndex: number, isDisabled: boolean }>
         }
 
         if (e.key.match(/^[a-zA-Z]$/)) {
-            if (index < letterRefs.current.length - 1) {
-                letterRefs.current[index + 1]?.focus();
+            if (currentIndex < letterRefs.current.length - 1) {
+                letterRefs.current[currentIndex + 1]?.focus();
+                setCurrentIndex(currentIndex + 1);
             }
         }
 
         if (e.key === 'Backspace' && index > 0 && e.currentTarget.value === '') {
-            letterRefs.current[index - 1]?.focus();
-        }
-
-        const guess = letterRefs.current[index]?.value;
-        if (guess) {
-            localStorage.setItem(`${rowIndex}_${index}`, guess);
+            letterRefs.current[currentIndex - 1]?.focus();
+            setCurrentIndex(currentIndex - 1);
         }
     };
 
     const calculateResultStatus =(index: number): ResultStatus => {
-        const guess = letterRefs.current[index]?.value.toLowerCase() || localStorage.getItem(`${rowIndex}_${index}`);
+        const guess = gameBoard[rowIndex][index]?.toLowerCase();
         if (!isDisabled || !guess) {
             return ResultStatus.BoxNone;
         }
 
-        if (index >= word.length) {
+        if (index >= wordOfTheDay.length) {
             return ResultStatus.BoxNone;
         }
 
-        if (guess === word[index]) {
+        if (guess === wordOfTheDay[index]) {
             return ResultStatus.BoxSuccess;
         }
 
-        if (word.includes(guess)) {
+        if (wordOfTheDay.includes(guess)) {
             return ResultStatus.BoxInWord;
         }
 
         return ResultStatus.BoxFail;
     };
-    
 
     return (
         <div className={`"word-row" ${isDisabled ? 'disabled' : ''}`}>
-            {Array.from({ length: 5 }).map((_, index) => (
+            {gameBoard[rowIndex].map((_, index) => (
                 <Letterbox
                     key={index}
                     ref={(el) => (letterRefs.current[index] = el)}
-                    onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyUp(e, index)} 
+                    notifyParent={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyUp(e, index)} 
                     status={calculateResultStatus(index)} 
-                    initGuess={localStorage.getItem(`${rowIndex}_${index}`) ?? ''}/>
+                    columnIndex={index}
+                    rowIndex={rowIndex}/>
             ))}
         </div>
     );
